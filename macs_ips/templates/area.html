@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+{% endblock head %}
+
+{% block body %}
+<div id="graph_container" style="height: 500px; min-width: 600px"></div>
+
+<script type='text/javascript'>
+$(function() {
+    
+    // See source code from the JSONP handler at https://github.com/highslide-software/highcharts.com/blob/master/samples/data/from-sql.php
+    $.getJSON('{{ url_for("data_json_route") }}?callback=?', function(data) {
+        
+        // Add a null value for the end date 
+        //data = [].concat(data, [[Date.UTC(2011, 9, 14, 19, 59), null, null, null, null]]);
+                
+        // create the chart
+        $('#graph_container').highcharts('StockChart', {
+            chart : {
+                type: 'area',
+                zoomType: 'x'
+            },
+            navigator : {
+                adaptToUpdatedData: false,
+                series : { data : data.navdata },
+                xAxis : {
+                    dateTimeLabelFormats: {
+                        month: '%b %Y',
+                    }
+                }
+            },
+            scrollbar: { liveRedraw: false },
+            title: { text: 'Browser Usage over time' },
+            xAxis : {
+                events : { afterSetExtremes : afterSetExtremes },
+                minRange: 24*3600*1000, // one day
+                dateTimeLabelFormats: {
+                    day: '%m/%d<br/>%Y',
+                    week: '%m/%d<br/>%Y',
+                    month: '%Y/%m',
+                    year: '%Y'
+                }
+            },
+            plotOptions : { area : { stacking : 'percent' } },
+            series : data.plotdata 
+        });
+    });
+});
+
+
+/**
+ * Load new data depending on the selected min and max
+ */
+function afterSetExtremes(e) {
+
+    var url;
+    var currentExtremes = this.getExtremes();
+    var range = e.max - e.min;
+    var chart = $('#graph_container').highcharts();
+    chart.showLoading('Loading data from server...');
+
+    $.getJSON('{{ url_for("data_json_route") }}?start='+ Math.round(e.min) +
+            '&end='+ Math.round(e.max) +'&callback=?', function(data) {
+        //chart.series[0].setData(data);
+        var i;
+        for (i = 0; i < data.length; i++){
+            chart.series[i].setData(data[i].data);
+        }
+        //chart.series = data;
+        chart.hideLoading();
+    });
+}
+</script>
+{% endblock body %}

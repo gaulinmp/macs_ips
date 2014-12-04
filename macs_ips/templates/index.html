@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block head %}
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+{% endblock head %}
+
+{% block body %}
+  <h1>Overview</h1>
+  {{ text | safe }}
+{% endblock body %}
