@@ -14,11 +14,11 @@ curl "http://example.com/?secret_write?comp_name=Home PC&comp_ip=10.0.0.2&secret
 You can change the location of this password file by changing `app.config['PW_FNAME']` in [macs_ips/\_\_init\_\_.py](macs_ips/__init__.py#L15) to be whatever you want (no relative paths, but absolute paths work).
 
 
-Anyway:
+Anyway there are two Flask endpoints for read and write:
 
 **Read URL:** /?secret\_word=\<YOUR PASSWORD HERE\>
 
-**Write URL:** /?secret\_write?comp\_name=NAME&comp\_ip=0.0.0.0&secret\_word=\<YOUR PASSWORD HERE\>
+**Write URL:** /secret\_write?comp\_name=NAME&comp\_ip=0.0.0.0&secret\_word=\<YOUR PASSWORD HERE\>
 
 Write script relies on requests (`pip install requests`).
 
