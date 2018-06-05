@@ -7,6 +7,6 @@ Anyway:
 Read URL: /?secret\_word=please
 Write URL: /?secret\_write?comp\_name=NAME&comp\_ip=0.0.0.0
 
-Write script relies on ipgetter (`pip install ipgetter`).
+Write script relies on requests (`pip install requests`).
 
 Pretty simple.
