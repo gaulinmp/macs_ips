@@ -12,18 +12,33 @@ from flask import Flask, render_template, request, url_for
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'apf9s8enpaosen6lkw34hiagiwuefhniencyra'
+app.config['PW_FNAME'] = "macs_ips.password"
+
+try:
+    with open(app.config['PW_FNAME'], 'r') as fh:
+        app.config['SECRET_PASSWORD'] = fh.read().strip()
+except FileNotFoundError:
+    app.config['SECRET_PASSWORD'] = None
 
 db_filename = "data.json"
 
 @app.route('/')
 def test():
-    secret   = request.args.get('magic_word', '')
-    if 'please' == secret:
+    secret = request.args.get('magic_word', '')
+    if app.config['SECRET_PASSWORD'] and app.config['SECRET_PASSWORD'] == secret:
         return "%s" % json.dumps(rw_db())
-    return ""
+    return ("Your password is no good...<br>"
+            "Make sure pasword file at {} is not empty "
+            "and matches the magic_word GET argument."
+            .format(os.path.abspath(app.config['PW_FNAME'])))
+
 
 @app.route('/secret_write', methods=['GET', ])
 def write():
+    secret = request.args.get('magic_word', '')
+    if not app.config['SECRET_PASSWORD'] or app.config['SECRET_PASSWORD'] != secret:
+        return "PASSWORD ERROR: {}".format(request.args)
+
     name_txt = request.args.get('comp_name', '')
     ip_txt   = request.args.get('comp_ip', '')
     if name_txt and ('dumb' != name_txt): # exists and
@@ -62,3 +77,6 @@ def _w_db(key=None, value=None):
             fh.write(json.dumps(current_db))
     print("Wrote: {}".format(current_db))
     return json.dumps(current_db)
+
+application = app
+
