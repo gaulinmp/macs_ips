@@ -3,12 +3,14 @@
 import sh
 import json
 import requests
-#import ipgetter
 import socket
 try:
     from urllib2 import urlopen
 except:
     from urllib.request import urlopen
+    
+PASSWORD_FILE = 'macs_ips.password'
+SERVER_ROOT = 'http://mgaulin.com/projects/macs_ips'
 
 def get_internal_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -31,7 +33,9 @@ def url_string():
     return _r
 
 if __name__ == "__main__":
+    with open(PASSWORD_FILE, 'r') as fh:
+        pword = fh.read().strip()
     for url in url_string():
-        full_url = "http://mgaulin.com/projects/macs_ips/secret_write?{}".format(url)
-        print(full_url)
-        print(urlopen(full_url))
+        full_url = ("{}/secret_write?secret_word={}&{}"
+                    .format(SERVER_ROOT, pword, url))
+        urlopen(full_url)
