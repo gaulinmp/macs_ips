@@ -42,6 +42,6 @@ if __name__ == "__main__":
     with open(PASSWORD_FILE, 'r') as fh:
         pword = fh.read().strip()
     for url in url_string():
-        full_url = ("{}/secret_write?secret_word={}&{}"
+        full_url = ("{}/secret_write?magic_word={}&{}"
                     .format(SERVER_ROOT, pword, url))
         print(requests.get(full_url).content)
